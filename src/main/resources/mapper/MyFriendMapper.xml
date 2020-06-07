@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.codeman22.chat.dao.MyFriendMapper" >
+
+  <resultMap id="BaseResultMap" type="com.codeman22.chat.entity.MyFriend" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="my_id" property="myId" jdbcType="VARCHAR" />
+    <result column="my_friend_id" property="myFriendId" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, my_id, my_friend_id
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from my_friend
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByRelation" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from my_friend
+    where my_id = #{myId,jdbcType=VARCHAR} AND my_friend_id = #{myFriendId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="listMyFriends" resultType="com.codeman22.chat.dto.MyFriendsMsg" parameterType="java.lang.String" >
+    SELECT
+          u.id as friendUserId,
+          u.user_name as friendUseName,
+          u.face_image as friendFaceImage,
+          u.nick_name as friendNickName
+    FROM
+          my_friend as mf
+    LEFT JOIN
+          user u
+    ON
+          u.id = mf.my_friend_id
+    WHERE
+          mf.my_id = #{myId}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from my_friend
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="com.codeman22.chat.entity.MyFriend" >
+    insert into my_friend (id, my_id, my_friend_id
+      )
+    values (#{id,jdbcType=VARCHAR}, #{myId,jdbcType=VARCHAR}, #{myFriendId,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.codeman22.chat.entity.MyFriend" >
+    insert into my_friend
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="myId != null" >
+        my_id,
+      </if>
+      <if test="myFriendId != null" >
+        my_friend_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="myId != null" >
+        #{myId,jdbcType=VARCHAR},
+      </if>
+      <if test="myFriendId != null" >
+        #{myFriendId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.codeman22.chat.entity.MyFriend" >
+    update my_friend
+    <set >
+      <if test="myId != null" >
+        my_id = #{myId,jdbcType=VARCHAR},
+      </if>
+      <if test="myFriendId != null" >
+        my_friend_id = #{myFriendId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.codeman22.chat.entity.MyFriend" >
+    update my_friend
+    set my_id = #{myId,jdbcType=VARCHAR},
+      my_friend_id = #{myFriendId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>
